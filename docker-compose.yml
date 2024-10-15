@@ -1,0 +1,14 @@
+# docker-compose.yml
+version: '3.8'
+services:
+  frontend:
+    build: ./frontend
+    ports:
+      - '3000:3000'
+    volumes:
+      - ./frontend:/usr/src/app
+    environment:
+      - CHOKIDAR_USEPOLLING=true
+    stdin_open: true
+    tty: true
+
