@@ -19,17 +19,15 @@ if (Test-Path $envFilePath) {
 $rootPath = $env:ROOT_PATH
 Write-Output "Root path is: $rootPath"
 
-
 # ディレクトリの作成
 New-Item -ItemType Directory -Path $rootPath -Force
 New-Item -ItemType Directory -Path "$rootPath/frontend" -Force
 
+# Reactプロジェクトを初期化（Dockerfileを作成する前に）
+cd "$rootPath/frontend"
+npx create-react-app . --template typescript
 
-# Reactプロジェクトを初期化
-cd $rootPath
-npx create-react-app frontend --template typescript
-
-# Dockerfileの作成
+# Dockerfileの作成（create-react-app 実行後）
 $frontendDockerfileContent = @"
 FROM node:20.11.0
 
@@ -42,9 +40,8 @@ COPY . .
 
 EXPOSE 3000
 CMD ["npm", "start"]
-
 "@
-New-Item -ItemType File -Path "$rootPath/frontend/Dockerfile" -Value $frontendDockerfileContent -Force
+Set-Content -Path "$rootPath/frontend/Dockerfile" -Value $frontendDockerfileContent -Force
 Write-Output "Dockerfile for frontend has been created."
 
 # docker-compose.ymlの作成
@@ -62,7 +59,6 @@ services:
       - CHOKIDAR_USEPOLLING=true
     stdin_open: true
     tty: true
-
 "@
 Set-Content "$rootPath/docker-compose.yml" -Value $dockerComposeContent -Force
 Write-Output "docker-compose.yml has been created."
@@ -70,8 +66,7 @@ Write-Output "docker-compose.yml has been created."
 Write-Output "Project structure has been created and React app initialized."
 
 # Dockerコンテナの起動
+cd $rootPath
 docker-compose up --build
 
 Write-Output "Directory structure has been created."
-
-# .\create-project-structure.ps1
