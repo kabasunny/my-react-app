@@ -1,13 +1,18 @@
-# docker-compose.yml
 version: '3.8'
 services:
-  frontend:
-    build: ./frontend
+  react-frontend:
+    build:
+      context: ./react-frontend
+      dockerfile: Dockerfile
+    container_name: react-frontend
     ports:
-      - '3000:3000'
+      - "3006:3000"
     volumes:
-      - ./frontend:/usr/src/app
+      - ./react-frontend:/react-frontend
     environment:
       - CHOKIDAR_USEPOLLING=true
+<<<<<<< HEAD
     stdin_open: true
     tty: true
+=======
+>>>>>>> f6a4957 (一応動くけど、重い気がする)
